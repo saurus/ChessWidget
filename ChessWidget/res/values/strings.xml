@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ChessWidget</string>
+    <string name="widget_text_white">white player</string>
+    <string name="widget_text_black">black player</string>
+    <string name="pgn_url">http://tcec.chessdom.com/live/LiveTmp.pgn</string>
+    <string name="site_url">http://tcec.chessdom.com/</string>
+
+    <integer name="pixels_per_square">14</integer>
+    <!-- configuration -->
+    <string name="config_name">confirm</string>
+    <string name="pref_updateFrequencyWifiName">Update frequency when on WiFI</string>
+
+    <array name="pref_updateFrequency_entries">
+        <item>Manual</item>
+        <item>1 day</item>
+        <item>12 hours</item>
+        <item>8 hours</item>
+        <item>4 hours</item>
+        <item>2 hours</item>
+        <item>1 hour</item>
+        <item>30 minutes</item>
+        <item>15 minutes</item>
+        <item>10 minutes</item>
+        <item>5 minutes</item>
+        <item>4 minutes</item>
+        <item>3 minutes</item>
+        <item>2 minutes</item>
+        <item>1 minute</item>
+    </array>
+    <array name="pref_updateFrequency_values">
+        <item>0</item> <!-- Manual -->
+        <item>1440</item> <!--  1 day -->
+        <item>720</item> <!--  12 hours -->
+        <item>480</item> <!--  8 hours -->
+        <item>240</item> <!--  4 hours  -->
+        <item>120</item> <!--  2 hours -->
+        <item>60</item> <!--  1 hour -->
+        <item>30</item> <!--  30 minutes -->
+        <item>15</item> <!--  15 minutes -->
+        <item>10</item> <!-- 10 minutes -->
+        <item>5</item> <!-- 5 minutes -->
+        <item>4</item> <!-- 4 minutes -->
+        <item>3</item> <!-- 3 minutes  -->
+        <item>2</item> <!--  2 minutes -->
+        <item>1</item> <!-- 1 minute -->
+    </array>
+    <string name="pref_updateFrequencyWifi_default">1</string>
+</resources>

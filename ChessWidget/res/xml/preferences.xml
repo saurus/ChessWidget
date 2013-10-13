@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<!--     <ListPreference
+        android:key="pref_updateFrequencyWifi"
+        android:title="@string/pref_updateFrequencyWifiName"
+        android:dialogTitle="@string/pref_updateFrequencyWifiName"
+        android:entries="@array/pref_updateFrequency_entries"
+        android:entryValues="@array/pref_updateFrequency_values"
+        android:defaultValue="@string/pref_updateFrequencyWifi_default" />
+        -->
+        <EditTextPreference 
+            android:key="pref_updateFrequencyWifi"
+            android:title="@string/pref_updateFrequencyWifiName"
+            android:dialogTitle="@string/pref_updateFrequencyWifiName"
+            android:defaultValue="1"
+            />
+</PreferenceScreen>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--  minWidth and minHeight: the current documentation states that for a 2 row/column widget, these should be set to 110... but is far too small!!! -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="142dp"
+    android:minHeight="142dp"
+    android:widgetCategory="home_screen|keyguard"
+    android:updatePeriodMillis="0"
+    android:initialLayout="@layout/main"
+    android:resizeMode="horizontal|vertical"
+    android:configure="org.saurus.chesswidget.ChessWidgetConfigure" 
+/> 
