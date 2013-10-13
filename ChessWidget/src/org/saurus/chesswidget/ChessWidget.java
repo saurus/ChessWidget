@@ -152,15 +152,24 @@ public class ChessWidget extends AppWidgetProvider {
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
 		String updateFrequencyWifiStr = sharedPref.getString(ChessWidgetConfigure.UPDATE_FREQUENCY_WIFI, "1");
 		int updateFrequencyWifi = Integer.parseInt(updateFrequencyWifiStr);
+		//String updateFrequencyMobileStr = sharedPref.getString(ChessWidgetConfigure.UPDATE_FREQUENCY_MOBILE, "1");
+		//int updateFrequencyMobile = Integer.parseInt(updateFrequencyMobileStr);
+		
+		int updateFrequency = 60 * updateFrequencyWifi;
 		// prepare Alarm Service to trigger Widget
 		Log.v(LOG, "createAlarm()");
 		Intent intent = new Intent(MY_WIDGET_UPDATE);
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeInMillis(System.currentTimeMillis());
-		calendar.add(Calendar.SECOND, 1);
-		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), updateFrequencyWifi * 60 * 1000, pendingIntent);
+		Calendar calendar = UpdateWidgetService.getLastEvent();
+		if (calendar == null) {
+			calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(System.currentTimeMillis());
+			calendar.add(Calendar.SECOND, 5);
+		} else
+			calendar.add(Calendar.SECOND, updateFrequency);
+			
+		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), updateFrequency * 1000, pendingIntent);
 	}
 
 	private void cancelAlarm(Context context) {

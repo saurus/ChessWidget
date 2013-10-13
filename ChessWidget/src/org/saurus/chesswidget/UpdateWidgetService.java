@@ -1,6 +1,7 @@
 package org.saurus.chesswidget;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import org.saurus.chess.pgn.Board;
 import org.saurus.chesswidget.ChessData.PlayerData;
@@ -44,6 +45,8 @@ public class UpdateWidgetService extends Service {
 
 	public static final String MY_REQUIRE_REDRAW = "MY_REQUIRE_REDRAW";
 
+	private static Calendar lastEvent;
+	
 	private static final String LOG = "chesswidget";
 	private static float pixelsPerOneDp = 0.0f;
 	private static float pixelsPerOneSp = 0.0f;
@@ -54,7 +57,18 @@ public class UpdateWidgetService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		boolean requireRedraw = false;
+
 		Log.i(LOG, "onStartCommand(): " + count + ", intent is null: " + (intent == null ? "yes" : "no"));
+		if (intent != null)
+			requireRedraw = intent.getBooleanExtra(MY_REQUIRE_REDRAW, false);
+		
+		if (!requireRedraw) {
+			// save current timestamp
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(System.currentTimeMillis());
+			lastEvent = calendar;
+		}
 		Context context = this.getApplicationContext();
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 		ComponentName thisWidget = new ComponentName(context, ChessWidget.class);
@@ -94,10 +108,6 @@ public class UpdateWidgetService extends Service {
 		}
 
 		if (widgetIsVisible) {
-			boolean requireRedraw = false;
-			if (intent != null)
-				requireRedraw = intent.getBooleanExtra(MY_REQUIRE_REDRAW, false);
-
 			if (requireRedraw && chessDataCache != null && chessDataCache.getData() != null)
 				drawBoard(chessDataCache.getData());
 			else
@@ -388,5 +398,9 @@ public class UpdateWidgetService extends Service {
 			}
 		}
 		return false;
+	}
+	
+	public static Calendar getLastEvent() {
+		return lastEvent;
 	}
 }

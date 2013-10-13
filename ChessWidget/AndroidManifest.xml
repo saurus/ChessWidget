@@ -25,9 +25,8 @@
             android:name=".ChessWidget"
             android:label="@string/app_name" >
             <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <intent-filter>
                 <action android:name="MY_OWN_WIDGET_UPDATE" />
             </intent-filter>
 
