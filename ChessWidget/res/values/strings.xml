@@ -2,8 +2,7 @@
 <resources>
 
     <string name="app_name">ChessWidget</string>
-    <string name="widget_text_white">white player</string>
-    <string name="widget_text_black">black player</string>
+    <string name="empty"></string>
     <string name="pgn_url">http://tcec.chessdom.com/live/LiveTmp.pgn</string>
     <string name="site_url">http://tcec.chessdom.com/</string>
 
