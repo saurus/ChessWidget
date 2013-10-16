@@ -10,8 +10,8 @@ import android.preference.PreferenceManager;
 public class ChessWidgetConfigure extends PreferenceActivity {
 	private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 	
-	
 	public static final String UPDATE_FREQUENCY_WIFI = "pref_updateFrequencyWifi";
+	public static final String UPDATE_FREQUENCY_MOBILE = "pref_updateFrequencyMobile";
 
 	public static final String CONFIGURATION_OK = "pref_isOk";
 

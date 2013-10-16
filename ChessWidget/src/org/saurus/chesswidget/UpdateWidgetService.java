@@ -46,7 +46,7 @@ public class UpdateWidgetService extends Service {
 	public static final String MY_REQUIRE_REDRAW = "MY_REQUIRE_REDRAW";
 
 	private static Calendar lastEvent;
-	
+
 	private static final String LOG = "chesswidget";
 	private static float pixelsPerOneDp = 0.0f;
 	private static float pixelsPerOneSp = 0.0f;
@@ -58,11 +58,9 @@ public class UpdateWidgetService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		boolean requireRedraw = false;
-
-		Log.i(LOG, "onStartCommand(): " + count + ", intent is null: " + (intent == null ? "yes" : "no"));
 		if (intent != null)
 			requireRedraw = intent.getBooleanExtra(MY_REQUIRE_REDRAW, false);
-		
+
 		if (!requireRedraw) {
 			// save current timestamp
 			Calendar calendar = Calendar.getInstance();
@@ -90,22 +88,27 @@ public class UpdateWidgetService extends Service {
 		} else
 			isWidgetInHome = true;
 
+		boolean isKeyGuardActive = false;
+
+		KeyguardManager km = (KeyguardManager) context.getSystemService(KEYGUARD_SERVICE);
+		if (km.inKeyguardRestrictedInputMode())
+			isKeyGuardActive = true;
+
 		boolean widgetIsVisible = false;
 
-		if (isWidgetInKeyguard) {
-			KeyguardManager km = (KeyguardManager) context.getSystemService(KEYGUARD_SERVICE);
-			if (km.inKeyguardRestrictedInputMode()) {
+		if (isWidgetInKeyguard && isKeyGuardActive)
+			widgetIsVisible = true;
+
+		if (widgetIsVisible == false && isWidgetInHome && !isKeyGuardActive) {
+			if (HomeIsShowing())
 				widgetIsVisible = true;
-				Log.d(LOG, "onStartCommand(): widget in keyguard and keyguard active");
-			}
 		}
 
-		if (widgetIsVisible == false && isWidgetInHome) {
-			if (HomeIsShowing()) {
-				widgetIsVisible = true;
-				Log.d(LOG, "onStartCommand(): widget in home and home active");
-			}
-		}
+		Log.i(LOG, "onStartCommand() [" + count + "], redraw: " + requireRedraw
+				+ ", inHome: " + isWidgetInHome
+				+ ", inKG: " + isWidgetInKeyguard
+				+ ", KGActive: " + isKeyGuardActive
+				+ ", visible: " + widgetIsVisible);
 
 		if (widgetIsVisible) {
 			if (requireRedraw && chessDataCache != null && chessDataCache.getData() != null)
@@ -113,9 +116,8 @@ public class UpdateWidgetService extends Service {
 			else
 				// get the board
 				readBoardAsync();
-		} else
-			Log.d(LOG, "onStartCommand(): widget not visible, skipping...");
-
+		}
+		
 		return super.onStartCommand(intent, flags, startId);
 	}
 
@@ -317,18 +319,18 @@ public class UpdateWidgetService extends Service {
 		sizePx = 8 * (sizePx / 8);
 
 		Sizes sizes = new Sizes(sizePx, fontSp);
-//		Log.v(LOG, "calculateSizes(): out: " //
-//				+ "widthDp = " + widthDp + "\n" //
-//				+ "defaults.squareSizeInPx = " + defaults.squareSizeInPx + "\n" //
-//				+ "extraSp = " + extraSp + "\n" //
-//				+ "fontSp = " + fontSp + "\n" //
-//				+ "defaults.textSizeInSp = " //
-//				+ defaults.textSizeInSp + "\n" //
-//				+ "fontDp = " + fontDp + "\n" //
-//				+ "heightForText = " + heightForText + "\n" //
-//				+ "heightDp = " + heightDp + "\n" //
-//				+ "sizeDp = " + sizeDp + "\n" //
-//				+ "sizePx = " + sizePx + "\n");
+		// Log.v(LOG, "calculateSizes(): out: " //
+		// + "widthDp = " + widthDp + "\n" //
+		// + "defaults.squareSizeInPx = " + defaults.squareSizeInPx + "\n" //
+		// + "extraSp = " + extraSp + "\n" //
+		// + "fontSp = " + fontSp + "\n" //
+		// + "defaults.textSizeInSp = " //
+		// + defaults.textSizeInSp + "\n" //
+		// + "fontDp = " + fontDp + "\n" //
+		// + "heightForText = " + heightForText + "\n" //
+		// + "heightDp = " + heightDp + "\n" //
+		// + "sizeDp = " + sizeDp + "\n" //
+		// + "sizePx = " + sizePx + "\n");
 
 		return sizes;
 	}
@@ -399,7 +401,7 @@ public class UpdateWidgetService extends Service {
 		}
 		return false;
 	}
-	
+
 	public static Calendar getLastEvent() {
 		return lastEvent;
 	}

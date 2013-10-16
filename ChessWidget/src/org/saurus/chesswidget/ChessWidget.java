@@ -12,6 +12,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +22,19 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 public class ChessWidget extends AppWidgetProvider {
+	public class ConnectionStatus {
+		public final boolean isConnected;
+		public final boolean isWifi;
+		public final int updateFrequency;
+
+		public ConnectionStatus(boolean isConnected, boolean isWifi, int updateFrequency) {
+			super();
+			this.isConnected = isConnected;
+			this.isWifi = isWifi;
+			this.updateFrequency = updateFrequency;
+		}
+	}
+
 	private static final String LOG = "chesswidget";
 	private static String MY_WIDGET_UPDATE = "MY_OWN_WIDGET_UPDATE";
 	public static String MY_WIDGET_CONFIGURED = "MY_OWN_WIDGET_CONFIGURED";
@@ -74,19 +89,14 @@ public class ChessWidget extends AppWidgetProvider {
 	}
 
 	public void updateAppWidget(Context context, AppWidgetManager appWidgetManager, boolean forceRedraw) {
-		Log.v(LOG, "updateAppWidget()");
-		// Build the intent to call the service
-		Intent intent = new Intent(context, UpdateWidgetService.class);// .getApplicationContext()
-		if (forceRedraw)
-			intent.putExtra(UpdateWidgetService.MY_REQUIRE_REDRAW, true);
 		// Update the widgets via the service
+		Intent intent = new Intent(context, UpdateWidgetService.class);
+		intent.putExtra(UpdateWidgetService.MY_REQUIRE_REDRAW, forceRedraw);
 		context.startService(intent);
 	}
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		super.onReceive(context, intent);
-
 		String intentAction = intent.getAction();
 		Log.v(LOG, "onReciever(): action = " + intentAction);
 
@@ -108,8 +118,12 @@ public class ChessWidget extends AppWidgetProvider {
 		} else if (Intent.ACTION_SCREEN_ON.equals(intentAction)) {
 			// the screen is turning on, (re-)start timer
 			createAlarm(context);
-		}
-		super.onReceive(context, intent);
+		} else if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intentAction)) {
+			// connectivity changed: (re-)start timer, maybe stopping the alarm, and maybe changing frequency
+			createAlarm(context);
+		} else
+			
+			super.onReceive(context, intent);
 	}
 
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -149,27 +163,31 @@ public class ChessWidget extends AppWidgetProvider {
 	}
 
 	private void createAlarm(Context context) {
-		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-		String updateFrequencyWifiStr = sharedPref.getString(ChessWidgetConfigure.UPDATE_FREQUENCY_WIFI, "1");
-		int updateFrequencyWifi = Integer.parseInt(updateFrequencyWifiStr);
-		//String updateFrequencyMobileStr = sharedPref.getString(ChessWidgetConfigure.UPDATE_FREQUENCY_MOBILE, "1");
-		//int updateFrequencyMobile = Integer.parseInt(updateFrequencyMobileStr);
-		
-		int updateFrequency = 60 * updateFrequencyWifi;
+		ConnectionStatus connectionStatus = getConnectionStatus(context);
+
+		// FIXME: do this outside...
+		if (!connectionStatus.isConnected) {
+			cancelAlarm(context);
+			return;
+		}
+
 		// prepare Alarm Service to trigger Widget
-		Log.v(LOG, "createAlarm()");
 		Intent intent = new Intent(MY_WIDGET_UPDATE);
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 		Calendar calendar = UpdateWidgetService.getLastEvent();
+		int updateFrequency = 5;
 		if (calendar == null) {
 			calendar = Calendar.getInstance();
 			calendar.setTimeInMillis(System.currentTimeMillis());
-			calendar.add(Calendar.SECOND, 5);
 		} else
-			calendar.add(Calendar.SECOND, updateFrequency);
-			
-		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), updateFrequency * 1000, pendingIntent);
+			updateFrequency = connectionStatus.updateFrequency;
+
+		calendar.add(Calendar.SECOND, updateFrequency);
+		Log.v(LOG, "createAlarm(): next: " 
+		+ calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE) +":" + calendar.get(Calendar.SECOND)
+		+ ", interval: " + updateFrequency);
+		alarmManager.setRepeating(AlarmManager.RTC, calendar.getTimeInMillis(), connectionStatus.updateFrequency * 1000, pendingIntent);
 	}
 
 	private void cancelAlarm(Context context) {
@@ -178,5 +196,28 @@ public class ChessWidget extends AppWidgetProvider {
 		PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, 0);
 		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 		alarmManager.cancel(sender);
+	}
+
+	private ConnectionStatus getConnectionStatus(Context context) {
+		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+		if (activeNetwork == null || !activeNetwork.isConnectedOrConnecting())
+			return new ConnectionStatus(false, false, 1000);
+
+		boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+		String updateFrequencyStr;
+
+		if (isWiFi)
+			updateFrequencyStr = sharedPref.getString(ChessWidgetConfigure.UPDATE_FREQUENCY_WIFI, "1");
+		else
+			updateFrequencyStr = sharedPref.getString(ChessWidgetConfigure.UPDATE_FREQUENCY_MOBILE, "1");
+
+		int updateFrequency = 60 * Integer.parseInt(updateFrequencyStr);
+
+		return new ConnectionStatus(true, isWiFi, updateFrequency);
 	}
 }

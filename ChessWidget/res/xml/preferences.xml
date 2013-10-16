@@ -14,4 +14,10 @@
             android:dialogTitle="@string/pref_updateFrequencyWifiName"
             android:defaultValue="1"
             />
+        <EditTextPreference 
+            android:key="pref_updateFrequencyMobile"
+            android:title="@string/pref_updateFrequencyMobileName"
+            android:dialogTitle="@string/pref_frequencyMinutes"
+            android:defaultValue="5"
+            />
 </PreferenceScreen>

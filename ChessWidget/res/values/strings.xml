@@ -10,6 +10,8 @@
     <!-- configuration -->
     <string name="config_name">confirm</string>
     <string name="pref_updateFrequencyWifiName">Update frequency when on WiFI</string>
+    <string name="pref_updateFrequencyMobileName">Update frequency when on Mobile</string>
+    <string name="pref_frequencyMinutes">minutes</string>
 
     <array name="pref_updateFrequency_entries">
         <item>Manual</item>
@@ -29,21 +31,36 @@
         <item>1 minute</item>
     </array>
     <array name="pref_updateFrequency_values">
-        <item>0</item> <!-- Manual -->
-        <item>1440</item> <!--  1 day -->
-        <item>720</item> <!--  12 hours -->
-        <item>480</item> <!--  8 hours -->
-        <item>240</item> <!--  4 hours  -->
-        <item>120</item> <!--  2 hours -->
-        <item>60</item> <!--  1 hour -->
-        <item>30</item> <!--  30 minutes -->
-        <item>15</item> <!--  15 minutes -->
-        <item>10</item> <!-- 10 minutes -->
-        <item>5</item> <!-- 5 minutes -->
-        <item>4</item> <!-- 4 minutes -->
-        <item>3</item> <!-- 3 minutes  -->
-        <item>2</item> <!--  2 minutes -->
-        <item>1</item> <!-- 1 minute -->
+        <item>0</item>
+        <!-- Manual -->
+        <item>1440</item>
+        <!-- 1 day -->
+        <item>720</item>
+        <!-- 12 hours -->
+        <item>480</item>
+        <!-- 8 hours -->
+        <item>240</item>
+        <!-- 4 hours -->
+        <item>120</item>
+        <!-- 2 hours -->
+        <item>60</item>
+        <!-- 1 hour -->
+        <item>30</item>
+        <!-- 30 minutes -->
+        <item>15</item>
+        <!-- 15 minutes -->
+        <item>10</item>
+        <!-- 10 minutes -->
+        <item>5</item>
+        <!-- 5 minutes -->
+        <item>4</item>
+        <!-- 4 minutes -->
+        <item>3</item>
+        <!-- 3 minutes -->
+        <item>2</item>
+        <!-- 2 minutes -->
+        <item>1</item>
+        <!-- 1 minute -->
     </array>
-    <string name="pref_updateFrequencyWifi_default">1</string>
+
 </resources>
