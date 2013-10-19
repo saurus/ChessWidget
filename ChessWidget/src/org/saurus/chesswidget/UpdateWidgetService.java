@@ -104,11 +104,11 @@ public class UpdateWidgetService extends Service {
 				widgetIsVisible = true;
 		}
 
-		Log.i(LOG, "onStartCommand() [" + count + "], redraw: " + requireRedraw
-				+ ", inHome: " + isWidgetInHome
-				+ ", inKG: " + isWidgetInKeyguard
-				+ ", KGActive: " + isKeyGuardActive
-				+ ", visible: " + widgetIsVisible);
+		Log.i(LOG, "onStartCommand() [" + count + "], redraw: " + getYN(requireRedraw)
+				+ ", inHome: " + getYN(isWidgetInHome)
+				+ ", inKG: " + getYN(isWidgetInKeyguard)
+				+ ", KGActive: " + getYN(isKeyGuardActive)
+				+ ", visible: " + getYN(widgetIsVisible));
 
 		if (widgetIsVisible) {
 			if (requireRedraw && chessDataCache != null && chessDataCache.getData() != null)
@@ -404,5 +404,10 @@ public class UpdateWidgetService extends Service {
 
 	public static Calendar getLastEvent() {
 		return lastEvent;
+	}
+	
+	public static String getYN(boolean yn) 
+	{
+		return yn?"Y":"N";
 	}
 }
